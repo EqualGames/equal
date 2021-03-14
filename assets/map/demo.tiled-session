@@ -1,0 +1,38 @@
+{
+    "activeFile": "demo.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "C:/Users/mathe/equal-games/equal/assets/map/base.tsx": {
+            "scaleInDock": 1
+        },
+        "base.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "base.xml": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "demo.tmx": {
+            "scale": 1.67734375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 256.655798789008,
+                "y": 256.35770843036795
+            }
+        }
+    },
+    "openFiles": [
+        "demo.tmx"
+    ],
+    "project": "demo.tiled-project",
+    "property.type": "bool",
+    "recentFiles": [
+        "demo.tmx",
+        "base.xml",
+        "base.tsx"
+    ]
+}
