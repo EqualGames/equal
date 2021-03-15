@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objecttypes>
+    <objecttype name="Ground" color="#a0a0a4">
+        <property name="collision" type="bool" default="false"/>
+    </objecttype>
+    <objecttype name="Tree" color="#aa0000">
+        <property name="collision" type="bool" default="true"/>
+    </objecttype>
+    <objecttype name="Wall" color="#5500ff">
+        <property name="collision" type="bool" default="true"/>
+    </objecttype>
+</objecttypes>

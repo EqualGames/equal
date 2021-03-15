@@ -1,10 +1,11 @@
 #ifndef EQUAL_CAMERASYSTEM_H
 #define EQUAL_CAMERASYSTEM_H
 
-#include <entt/entt.hpp>
-#include "../components/Transform.h"
 #include "../components/Camera.h"
+#include "../components/Transform.h"
+#include <entt/entt.hpp>
 
-void camera_system(entt::registry &registry, entt::entity &camera_entity, entt::entity &player_entity);
+void camera_system(entt::registry &registry, const entt::entity &camera_entity,
+                   const entt::entity &player_entity);
 
-#endif //EQUAL_CAMERASYSTEM_H
+#endif // EQUAL_CAMERASYSTEM_H
