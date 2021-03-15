@@ -1,11 +1,17 @@
 #ifndef EQUAL_HELPERS_H
 #define EQUAL_HELPERS_H
 
+#include "Types.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <string>
 #include <string_view>
 #include <utility>
 
-void replace(std::string &text, const std::string &search, const std::string &replace);
+SDL_Texture *load_texture(SDL_Renderer *renderer, const std::string &path);
+
+void replace(std::string &text, const std::string &search,
+             const std::string &replace);
 
 void ltrim(std::string &s);
 
@@ -19,6 +25,7 @@ std::string rtrim_copy(std::string s);
 
 std::string trim_copy(std::string s);
 
-std::pair<std::string, std::string> split_pair(const std::string &text, char delimiter, bool remove_spaces = true);
+std::pair<std::string, std::string>
+split_pair(const std::string &text, char delimiter, bool remove_spaces = true);
 
-#endif //EQUAL_HELPERS_H
+#endif // EQUAL_HELPERS_H

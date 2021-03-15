@@ -3,6 +3,10 @@ project(Equal)
 
 set(CMAKE_CXX_STANDARD 20)
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_definitions(DEBUG)
+endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
+
 find_package(EnTT CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(sdl2-image CONFIG REQUIRED)

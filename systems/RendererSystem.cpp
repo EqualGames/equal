@@ -1,118 +1,98 @@
 #include "RendererSystem.h"
 
-SDL_Texture *load_texture(SDL_Renderer *renderer, const std::string &path) {
-    SDL_Texture *texture = nullptr;
+void renderer_system(entt::registry &registry, SDL_Renderer *renderer,
+                     const entt::entity &camera) {
+  const auto cam = registry.get<Camera>(camera);
+  const auto map = registry.view<Map>();
 
-    SDL_Surface *image = IMG_Load(path.c_str());
+  for (auto [entity, map] : map.each())
+    for (auto floor : map.floors)
+      for (auto tile : floor->tiles)
+        for (auto thing : tile->things) {
 
-    if (image == nullptr) {
-        printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError());
-    } else {
-        texture = SDL_CreateTextureFromSurface(renderer, image);
+          if (thing->flags & TileFlag::ENTITY) {
+            render_sprite(registry, renderer, cam, thing->id);
+            continue;
+          }
 
-        if (texture == nullptr) {
-            printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
+          auto tileset = map.get_tileset(thing->gid);
+
+          if (!tileset) {
+            continue;
+          }
+
+          SDL_Rect texture_rect = tileset->get_texture_position(thing->gid);
+          SDL_Rect target_rect{
+              (tile->position.x * map.tile_size.w) - cam.position.x,
+              (tile->position.y * map.tile_size.h) - cam.position.y,
+              texture_rect.w,
+              texture_rect.h,
+          };
+
+          if (texture_rect.w > map.tile_size.w) {
+            target_rect.x -=
+                (texture_rect.w / map.tile_size.w) * (map.tile_size.w / 2);
+          }
+
+          if (texture_rect.h > map.tile_size.h) {
+            target_rect.y -=
+                (texture_rect.h / map.tile_size.h) * (map.tile_size.h / 2);
+          }
+
+#ifdef DEBUG
+          if (thing->flags & TileFlag::COLLISION) {
+            SDL_SetTextureColorMod(tileset->texture, 255, 0, 0);
+          }
+#endif
+          SDL_RenderCopy(renderer, tileset->texture, &texture_rect,
+                         &target_rect);
+
+#ifdef DEBUG
+          SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
+          SDL_RenderDrawRect(renderer, &target_rect);
+#endif
         }
-
-        SDL_FreeSurface(image);
-        image = nullptr;
-    }
-
-    return texture;
 }
 
+void render_sprite(entt::registry &registry, SDL_Renderer *renderer,
+                   const Camera &camera, const entt::entity &entity) {
+  const auto [transform, sprite] = registry.get<Transform, Sprite>(entity);
 
-void renderer_system(entt::registry &registry, SDL_Renderer *renderer, entt::entity &camera) {
-    auto cam = registry.get<Camera>(camera);
-    const auto &objects = registry.view<const Transform, const Sprite>();
-    const auto &map = registry.view<const Map>();
+  const auto &position = transform.position;
+  const auto &size = transform.size;
 
-    for (auto[entity, map]: map.each()) {
-        for (auto floor : map.floors) {
-            for (auto layer : floor->layers) {
-                for (auto tile: layer->tiles) {
+  SDL_Rect target_rect{
+      (position.x * 32) - camera.position.x,
+      (position.y * 32) - camera.position.y,
+      size.w,
+      size.h,
+  };
 
-                    if (tile->texture_id == 0) continue;
+  if (sprite.textures.empty()) {
+    const auto &color = sprite.color;
 
-                    auto texture_it = std::find_if(
-                            map.textures.rbegin(),
-                            map.textures.rend(),
-                            [&](const std::pair<uint32_t, SDL_Texture *> &p) {
-                                if (p.first <= tile->texture_id) {
-                                    return true;
-                                }
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_RenderFillRect(renderer, &target_rect);
 
-                                return false;
-                            });
+    return;
+  }
 
-                    auto&[guid, texture_source] = *texture_it;
+  auto [texture, tex_pos, tex_size] = sprite.textures.at(0);
 
-                    Size spritesheet{};
-                    SDL_QueryTexture(texture_source, nullptr, nullptr, &spritesheet.w, &spritesheet.h);
+  SDL_Rect texture_rect{
+      tex_pos.x,
+      tex_pos.y,
+      tex_size.w,
+      tex_size.h,
+  };
 
-                    int texture_id = (int) (tile->texture_id - guid);
-                    auto tex_pos = Position{
-                            map.tile_size.w * (texture_id % (spritesheet.w / map.tile_size.w)),
-                            map.tile_size.h *
-                            ((texture_id / (spritesheet.w / map.tile_size.w)) % (spritesheet.h / map.tile_size.h))
-                    };
+  if (target_rect.w > 32) {
+    target_rect.x -= (target_rect.w / 32) * (32 / 2);
+  }
 
-                    auto texture_rect = SDL_Rect{
-                            tex_pos.x,
-                            tex_pos.y,
-                            map.tile_size.w,
-                            map.tile_size.h,
-                    };
+  if (target_rect.h > 32) {
+    target_rect.y -= (target_rect.h / 32) * (32 / 2);
+  }
 
-                    auto target_rect = SDL_Rect{
-                            tile->position.x - cam.position.x,
-                            tile->position.y - cam.position.y,
-                            map.tile_size.w,
-                            map.tile_size.h,
-                    };
-
-                    SDL_RenderCopy(renderer, texture_source, &texture_rect, &target_rect);
-                }
-            }
-        }
-
-    }
-
-    for (auto[entity, transform, sprite]: objects.each()) {
-        auto &pos = transform.position;
-        auto &size = transform.size;
-
-        if (sprite.textures.empty()) {
-            auto object_rect = new SDL_Rect{
-                    pos.x - cam.position.x,
-                    pos.y - cam.position.y,
-                    size.w,
-                    size.h,
-            };
-
-            auto color = sprite.color;
-            SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-            SDL_RenderFillRect(renderer, object_rect);
-
-            continue;
-        }
-
-        auto[texture, tex_pos, tex_size] = sprite.textures.at(0);
-
-        auto texture_rect = SDL_Rect{
-                tex_pos.x,
-                tex_pos.y,
-                tex_size.w,
-                tex_size.h,
-        };
-
-        auto target_rect = SDL_Rect{
-                pos.x - cam.position.x,
-                pos.y - cam.position.y,
-                size.w,
-                size.h,
-        };
-
-        SDL_RenderCopy(renderer, texture, &texture_rect, &target_rect);
-    }
+  SDL_RenderCopy(renderer, texture, &texture_rect, &target_rect);
 }

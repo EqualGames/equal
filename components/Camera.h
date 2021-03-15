@@ -4,8 +4,8 @@
 #include "../core/Types.h"
 
 struct Camera {
-    Position position;
-    Size size;
+  Position position;
+  Size size;
 };
 
-#endif //EQUAL_CAMERA_H
+#endif // EQUAL_CAMERA_H
