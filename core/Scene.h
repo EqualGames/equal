@@ -8,12 +8,9 @@ struct Application;
 
 struct Scene {
   Application *app{nullptr};
-  entt::registry registry;
 
-  virtual void init(SDL_Renderer *renderer) = 0;
-
-  virtual void update(SDL_Renderer *renderer, const SDL_Event &event,
-                      const float &deltaTime) = 0;
+  virtual void init() = 0;
+  virtual void update() = 0;
 };
 
 #endif // EQUAL_SCENE_H

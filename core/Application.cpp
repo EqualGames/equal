@@ -1,7 +1,7 @@
 #include "Application.h"
 
 bool Application::init() {
-  if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
     printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
     return false;
   }
@@ -38,9 +38,12 @@ bool Application::init() {
 }
 
 void Application::set_scene(Scene *p_scene) {
+  if (this->scene) {
+    this->registry.clear();
+  }
   this->scene = p_scene;
   this->scene->app = this;
-  this->scene->init(this->renderer);
+  this->scene->init();
 }
 
 const float SCREEN_TICKS_PER_FRAME = 0.016f;
@@ -51,129 +54,133 @@ int Application::run() {
     return 1;
   }
 
-  LTimer timer;
-  float deltaTime{0.0f};
+  Timer timer;
 
   while (this->running) {
     timer.start();
 
-    while (SDL_PollEvent(&event) != 0) {
+    while (SDL_PollEvent(&this->event) != 0) {
       if (event.type == SDL_QUIT ||
           event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
         this->running = false;
+      } else {
+        this->update_joystick();
+        this->update_keyboard();
       }
     }
 
     SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 0);
     SDL_RenderClear(this->renderer);
 
-    scene->update(this->renderer, this->event, deltaTime);
+    scene->update();
 
     SDL_RenderPresent(this->renderer);
 
-    deltaTime = timer.getTicks() / 1000.0f;
+    this->deltaTime = timer.get_ticks() / 1000.0f;
 
-    if (deltaTime < SCREEN_TICKS_PER_FRAME) {
-      float diff = SCREEN_TICKS_PER_FRAME - deltaTime;
+    if (this->deltaTime < SCREEN_TICKS_PER_FRAME) {
+      float diff = SCREEN_TICKS_PER_FRAME - this->deltaTime;
 
       SDL_Delay(diff * 1000.0f);
     }
+
+    auto fps = 1000.0f / timer.get_ticks();
+    printf("FPS: %.0f\n", fps);
   }
 
   this->scene = nullptr;
   this->renderer = nullptr;
-  SDL_DestroyWindow(window);
+  SDL_DestroyWindow(this->window);
   this->window = nullptr;
-
   SDL_Quit();
 
   return 0;
 }
 
-LTimer::LTimer() {
-  // Initialize the variables
-  mStartTicks = 0;
-  mPausedTicks = 0;
+void Application::update_joystick() {
+  if (event.type != SDL_JOYAXISMOTION) {
+    return;
+  }
 
-  mPaused = false;
-  mStarted = false;
-}
+  if (event.jaxis.value > g_joystick_dead_zone ||
+      event.jaxis.value < -g_joystick_dead_zone) {
+    auto value = normalize_axis(event.jaxis.value);
 
-void LTimer::start() {
-  // Start the timer
-  mStarted = true;
+    if (event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY) {
+      if (value < 0) {
+        direction.up = true;
+      }
 
-  // Unpause the timer
-  mPaused = false;
+      if (value > 0) {
+        direction.down = true;
+      }
+    }
 
-  // Get the current clock time
-  mStartTicks = SDL_GetTicks();
-  mPausedTicks = 0;
-}
+    if (event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTX) {
+      if (value < 0) {
+        direction.left = true;
+      }
 
-void LTimer::stop() {
-  // Stop the timer
-  mStarted = false;
+      if (value > 0) {
+        direction.right = true;
+      }
+    }
+  } else {
+    if (event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY) {
+      direction.up = false;
+      direction.down = false;
+    }
 
-  // Unpause the timer
-  mPaused = false;
-
-  // Clear tick variables
-  mStartTicks = 0;
-  mPausedTicks = 0;
-}
-
-void LTimer::pause() {
-  // If the timer is running and isn't already paused
-  if (mStarted && !mPaused) {
-    // Pause the timer
-    mPaused = true;
-
-    // Calculate the paused ticks
-    mPausedTicks = SDL_GetTicks() - mStartTicks;
-    mStartTicks = 0;
+    if (event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTX) {
+      direction.left = false;
+      direction.right = false;
+    }
   }
 }
 
-void LTimer::unpause() {
-  // If the timer is running and paused
-  if (mStarted && mPaused) {
-    // Unpause the timer
-    mPaused = false;
-
-    // Reset the starting ticks
-    mStartTicks = SDL_GetTicks() - mPausedTicks;
-
-    // Reset the paused ticks
-    mPausedTicks = 0;
+void Application::update_keyboard() {
+  if (event.type != SDL_KEYDOWN && event.type != SDL_KEYUP) {
+    return;
   }
-}
 
-Uint32 LTimer::getTicks() {
-  // The actual timer time
-  Uint32 time = 0;
+  auto isUp = event.key.keysym.scancode == SDL_SCANCODE_UP;
+  auto isDown = event.key.keysym.scancode == SDL_SCANCODE_DOWN;
+  auto isLeft = event.key.keysym.scancode == SDL_SCANCODE_LEFT;
+  auto isRight = event.key.keysym.scancode == SDL_SCANCODE_RIGHT;
 
-  // If the timer is running
-  if (mStarted) {
-    // If the timer is paused
-    if (mPaused) {
-      // Return the number of ticks when the timer was paused
-      time = mPausedTicks;
-    } else {
-      // Return the current time minus the start time
-      time = SDL_GetTicks() - mStartTicks;
+  if (event.type == SDL_KEYDOWN) {
+    if (isUp) {
+      direction.up = true;
+    }
+
+    if (isDown) {
+      direction.down = true;
+    }
+
+    if (isLeft) {
+      direction.left = true;
+    }
+
+    if (isRight) {
+      direction.right = true;
     }
   }
 
-  return time;
-}
+  if (event.type == SDL_KEYUP) {
+    if (isUp) {
+      direction.up = false;
+    }
 
-bool LTimer::isStarted() {
-  // Timer is running and paused or unpaused
-  return mStarted;
-}
+    if (isDown) {
+      direction.down = false;
+    }
 
-bool LTimer::isPaused() {
-  // Timer is running and paused
-  return mPaused && mStarted;
+    if (isLeft) {
+      direction.left = false;
+    }
+
+    if (isRight) {
+      direction.right = false;
+    }
+  }
 }

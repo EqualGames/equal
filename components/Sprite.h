@@ -2,6 +2,7 @@
 #define EQUAL_SPRITE_H
 
 #include "../core/Types.h"
+#include <SDL2/SDL.h>
 #include <tuple>
 #include <vector>
 
@@ -12,6 +13,7 @@ enum SpriteRenderType {
 };
 
 struct Sprite {
+  int depth{0};
   Direction direction{Direction::Down};
   SpriteRenderType render_type{SpriteRenderType::FULL};
   Color color{};

@@ -4,10 +4,10 @@
 
 int main(int argc, char *args[]) {
   try {
-    auto *app = new Application();
+    auto *app = new Application{{800, 600}};
 
     if (app->init()) {
-      app->set_scene(new DemoScene());
+      app->set_scene(new DemoScene{});
 
       return app->run();
     }
