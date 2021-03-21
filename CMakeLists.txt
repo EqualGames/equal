@@ -13,10 +13,10 @@ find_package(sdl2-image CONFIG REQUIRED)
 find_package(sdl2-ttf CONFIG REQUIRED)
 find_package(pugixml CONFIG REQUIRED)
 
-file(GLOB PROJECT_SOURCES CONFIGURE_DEPENDS "*.cpp" "**/*.cpp")
+file(GLOB PROJECT_SOURCES CONFIGURE_DEPENDS "**/*.cpp")
 file(GLOB PROJECT_INCLUDES CONFIGURE_DEPENDS "**/*.h" "**/*.hpp")
 
-add_executable(main ${PROJECT_SOURCES} ${PROJECT_INCLUDES})
+add_executable(main main.cpp ${PROJECT_SOURCES} ${PROJECT_INCLUDES})
 target_link_libraries(main PRIVATE EnTT::EnTT)
 target_link_libraries(main PRIVATE SDL2::SDL2 SDL2::SDL2main)
 target_link_libraries(main PRIVATE SDL2::SDL2_image)

@@ -3,30 +3,45 @@
 
 #include <cstdint>
 
+struct DirectionalStatus {
+  bool up{false};
+  bool down{false};
+  bool left{false};
+  bool right{false};
+};
+
 enum Direction {
-  None = 1 << 0,
-  Up = 1 << 1,
-  Down = 1 << 2,
-  Left = 1 << 3,
-  Right = 1 << 4,
+  None,
+  Up,
+  Down,
+  Left,
+  Right,
 };
 
 struct Position {
-  int x;
-  int y;
+  int x{0};
+  int y{0};
+  int z{0};
 
   bool operator==(const Position &right) const {
-    return this->x == right.x && this->y == right.y;
+    return this->x == right.x && this->y == right.y && this->z == right.z;
   }
 
   bool operator!=(const Position &right) const {
-    return this->x != right.x || this->y != right.y;
+    return this->x != right.x || this->y != right.y || this->z != right.z;
   }
 };
 
 struct Size {
-  int w;
-  int h;
+  int w{0};
+  int h{0};
+
+  Size operator/(int value) const {
+    return Size{this->w / value, this->h / value};
+  }
+  Size operator*(int value) const {
+    return Size{this->w * value, this->h * value};
+  }
 };
 
 struct Color {

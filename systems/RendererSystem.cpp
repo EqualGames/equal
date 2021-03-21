@@ -1,72 +1,78 @@
 #include "RendererSystem.h"
 
-void renderer_system(entt::registry &registry, SDL_Renderer *renderer,
-                     const entt::entity &camera) {
-  const auto cam = registry.get<Camera>(camera);
-  const auto map = registry.view<Map>();
+void renderer_system(Application *app, const Map *map,
+                     entt::entity camera_entity) {
 
-  for (auto [entity, map] : map.each())
-    for (auto floor : map.floors)
-      for (auto tile : floor->tiles)
-        for (auto thing : tile->things) {
+  app->registry.sort<Sprite>([](const Sprite &left, const Sprite &right) {
+    return left.depth < right.depth;
+  });
 
-          if (thing->flags & TileFlag::ENTITY) {
-            render_sprite(registry, renderer, cam, thing->id);
-            continue;
-          }
+  app->registry.sort<Transform>(
+      [](const Transform &left, const Transform &right) {
+        return left.position.z < right.position.z;
+      });
 
-          auto tileset = map.get_tileset(thing->gid);
+  const auto &camera = app->registry.get<Camera>(camera_entity);
+  auto entities = app->registry.view<const Sprite, const Transform>();
 
-          if (!tileset) {
-            continue;
-          }
+  for (auto [entity, sprite, transform] : entities.each()) {
+    bool need_to_render = in_camera_bound(map, transform.position, camera) &&
+                          is_renderable(map, transform, sprite);
 
-          SDL_Rect texture_rect = tileset->get_texture_position(thing->gid);
-          SDL_Rect target_rect{
-              (tile->position.x * map.tile_size.w) - cam.position.x,
-              (tile->position.y * map.tile_size.h) - cam.position.y,
-              texture_rect.w,
-              texture_rect.h,
-          };
-
-          if (texture_rect.w > map.tile_size.w) {
-            target_rect.x -=
-                (texture_rect.w / map.tile_size.w) * (map.tile_size.w / 2);
-          }
-
-          if (texture_rect.h > map.tile_size.h) {
-            target_rect.y -=
-                (texture_rect.h / map.tile_size.h) * (map.tile_size.h / 2);
-          }
-
-#ifdef DEBUG
-          if (thing->flags & TileFlag::COLLISION) {
-            SDL_SetTextureColorMod(tileset->texture, 255, 0, 0);
-          }
-#endif
-          SDL_RenderCopy(renderer, tileset->texture, &texture_rect,
-                         &target_rect);
-
-#ifdef DEBUG
-          SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
-          SDL_RenderDrawRect(renderer, &target_rect);
-#endif
-        }
+    if (need_to_render) {
+      render_sprite(app->registry, entity, app->renderer, camera, transform,
+                    sprite, map->tile_size);
+    }
+  }
 }
 
-void render_sprite(entt::registry &registry, SDL_Renderer *renderer,
-                   const Camera &camera, const entt::entity &entity) {
-  const auto [transform, sprite] = registry.get<Transform, Sprite>(entity);
+bool in_camera_bound(const Map *map, const Position &position,
+                     const Camera &camera) {
+  return position.x >= camera.position.x - map->tile_size.w &&
+         position.y >= camera.position.y - map->tile_size.h &&
+         position.x <= camera.position.x + camera.size.w &&
+         position.y <= camera.position.y + camera.size.h;
+}
 
-  const auto &position = transform.position;
-  const auto &size = transform.size;
+bool is_renderable(const Map *map, const Transform &transform,
+                   const Sprite &sprite) {
+  int depth = map->get_depth(sprite.depth, transform.position);
+
+  return depth < Map::MAX_TILE_VISIBLE_ENTITIES;
+}
+
+void render_sprite(entt::registry &registry, entt::entity &entity,
+                   SDL_Renderer *renderer, const Camera &camera,
+                   const Transform &transform, const Sprite &sprite,
+                   const Size &map_tile_size) {
+
+#ifdef DEBUG_RENDER_SYSTEM
+  printf("RenderSystem <- Camera(%i %i) (%i %i)\n", camera.position.x,
+         camera.position.y, camera.size.w, camera.size.h);
+  printf("RenderSystem <- Transform(%i %i) (%i %i)\n", transform.position.x,
+         transform.position.y, transform.size.w, transform.size.h);
+#endif
 
   SDL_Rect target_rect{
-      (position.x * 32) - camera.position.x,
-      (position.y * 32) - camera.position.y,
-      size.w,
-      size.h,
+      transform.position.x - camera.position.x,
+      transform.position.y - camera.position.y,
+      transform.size.w,
+      transform.size.h,
   };
+
+  if (target_rect.w > map_tile_size.w) {
+    target_rect.x -=
+        ((target_rect.w / map_tile_size.w) - 1) * (map_tile_size.w / 2);
+  }
+
+  if (target_rect.h > map_tile_size.h) {
+    target_rect.y -= (target_rect.h / map_tile_size.h) * (map_tile_size.h / 2);
+  }
+
+#ifdef DEBUG_RENDER_SYSTEM
+  printf("RenderSystem <- SDL_Rect(%i %i) (%i %i)\n", target_rect.x,
+         target_rect.y, target_rect.w, target_rect.h);
+#endif
 
   if (sprite.textures.empty()) {
     const auto &color = sprite.color;
@@ -86,13 +92,20 @@ void render_sprite(entt::registry &registry, SDL_Renderer *renderer,
       tex_size.h,
   };
 
-  if (target_rect.w > 32) {
-    target_rect.x -= (target_rect.w / 32) * (32 / 2);
-  }
-
-  if (target_rect.h > 32) {
-    target_rect.y -= (target_rect.h / 32) * (32 / 2);
-  }
-
   SDL_RenderCopy(renderer, texture, &texture_rect, &target_rect);
+
+#ifdef DEBUG_COLLISION
+  if (registry.has<RigidBody>(entity)) {
+    const auto &rb = registry.get<RigidBody>(entity);
+    SDL_Rect collision{
+        .x = rb.position.x - camera.position.x,
+        .y = rb.position.y - camera.position.y,
+        .w = rb.size.w,
+        .h = rb.size.h,
+    };
+
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    SDL_RenderDrawRect(renderer, &collision);
+  }
+#endif
 }

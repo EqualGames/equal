@@ -2,12 +2,11 @@
 #define EQUAL_DEMO_SCENE_H
 
 #include "../components/Camera.h"
-#include "../components/Input.h"
-#include "../components/Map.h"
+#include "../components/Player.h"
 #include "../components/Sprite.h"
 #include "../components/Transform.h"
-#include "../core/Application.h"
 #include "../core/Helpers.h"
+#include "../core/Map.h"
 #include "../core/Scene.h"
 #include "../systems/CameraSystem.h"
 #include "../systems/InputSystem.h"
@@ -22,12 +21,11 @@
 struct DemoScene : Scene {
   entt::entity player;
   entt::entity camera;
-  entt::entity map;
+  Map *map{nullptr};
 
-  void init(SDL_Renderer *renderer) override;
+  void init() override;
 
-  void update(SDL_Renderer *renderer, const SDL_Event &event,
-              const float &deltaTime) override;
+  void update() override;
 };
 
 #endif // EQUAL_DEMO_SCENE_H
