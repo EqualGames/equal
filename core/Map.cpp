@@ -1,7 +1,6 @@
 #include "Map.h"
 
-Map::Map(entt::registry &registry, const char *source, const char *types_source,
-         SDL_Renderer *renderer) {
+Map::Map(Scene *scene, const char *source, const char *types_source) {
   std::map<std::string, bool> collisions{};
 
   // Object types
@@ -11,7 +10,7 @@ Map::Map(entt::registry &registry, const char *source, const char *types_source,
 
     if (!types_result) {
       printf(
-          "XML [%s] parsed with errors, offset %i (error at [...%s])\n%s\n\n",
+          "XML [%s] parsed with errors, offset %ti (error at [...%s])\n%s\n\n",
           types_source, types_result.offset,
           (types_source + types_result.offset), types_result.description());
 
@@ -42,7 +41,7 @@ Map::Map(entt::registry &registry, const char *source, const char *types_source,
   auto result = map_doc.load_file(source);
 
   if (!result) {
-    printf("XML [%s] parsed with errors, offset %i (error at [...%s])\n%s\n\n",
+    printf("XML [%s] parsed with errors, offset %ti (error at [...%s])\n%s\n\n",
            source, result.offset, (source + result.offset),
            result.description());
 
@@ -68,8 +67,11 @@ Map::Map(entt::registry &registry, const char *source, const char *types_source,
 
       tileset.texture_size = Size{$tileset_image.attribute("width").as_int(),
                                   $tileset_image.attribute("height").as_int()};
-      tileset.texture =
-          load_texture(renderer, "assets/map/" + texture_name + ".png");
+      entt::hashed_string texture_id{texture_name.c_str()};
+      scene->textures.load<TextureLoader>(texture_id, scene->app->renderer,
+                                          "assets/map/" + texture_name +
+                                              ".png");
+      tileset.texture = texture_id;
 
       std::map<uint32_t, std::string> types;
       for (auto $tileset_tile = $tileset.child("tile"); $tileset_tile;
@@ -155,13 +157,14 @@ Map::Map(entt::registry &registry, const char *source, const char *types_source,
                 }
               }
 
-              entt::entity thing_entity = registry.create();
+              entt::entity thing_entity = scene->registry->create();
 
-              Transform &transform = registry.emplace<Transform>(thing_entity);
+              TransformComponent &transform =
+                  scene->registry->emplace<TransformComponent>(thing_entity);
               transform.position = tile->position;
               transform.size = this->tile_size;
 
-              Sprite &sprite = registry.emplace<Sprite>(thing_entity);
+              SpriteComponent &sprite = scene->registry->emplace<SpriteComponent>(thing_entity);
               auto tileset = this->get_tileset(gid);
               auto rect = tileset.get_texture_position(gid);
               sprite.textures.emplace_back(
@@ -188,7 +191,8 @@ Map::Map(entt::registry &registry, const char *source, const char *types_source,
                   tile->collision = true;
                 }
 
-                RigidBody &rb = registry.emplace<RigidBody>(thing_entity);
+                RigidBodyComponent &rb =
+                    scene->registry->emplace<RigidBodyComponent>(thing_entity);
 
                 if (type_name->second == "Tree") {
                   transform.size = transform.size * 2;
@@ -198,13 +202,11 @@ Map::Map(entt::registry &registry, const char *source, const char *types_source,
                 }
 
                 if (type_name->second == "Wall") {
-                  transform.size = Size{transform.size.w, transform.size.h * 2};
+                  transform.size =
+                      Size{transform.size.w * 2, transform.size.h * 2};
 
-                  rb.position =
-                      Position{transform.position.x,
-                               transform.position.y - transform.size.h / 2,
-                               transform.position.z};
-                  rb.size = transform.size;
+                  rb.position = transform.position;
+                  rb.size = Size{transform.size.w, transform.size.h / 2};
                 }
               }
 
@@ -288,13 +290,18 @@ Tile *Map::get_tile(const Position &position) const {
 }
 
 void Map::attach(entt::registry &registry, entt::entity entity) {
-  auto [transform, sprite] = registry.get<Transform, Sprite>(entity);
+  const auto &transform = registry.get<TransformComponent>(entity);
 
   auto tile = this->get_tile(transform.position);
   tile->entities.emplace_back(entity);
 
-  transform.position.z = tile->position.z;
-  sprite.depth = Map::make_depth(tile, ThingOrder::CREATURE);
+  registry.patch<TransformComponent>(entity, [tile](TransformComponent &transform) {
+    transform.position.z = tile->position.z;
+  });
+
+  registry.patch<SpriteComponent>(entity, [tile](SpriteComponent &sprite) {
+    sprite.depth = Map::make_depth(tile, ThingOrder::CREATURE);
+  });
 }
 
 int Map::get_depth(int sprite_depth, const Position &position) const {

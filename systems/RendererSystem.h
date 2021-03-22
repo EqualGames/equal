@@ -1,28 +1,30 @@
+
 #ifndef EQUAL_RENDERER_SYSTEM_H
 #define EQUAL_RENDERER_SYSTEM_H
 
-#include "../components/Camera.h"
-#include "../components/Sprite.h"
-#include "../components/Transform.h"
-#include "../core/Application.h"
-#include "../core/Helpers.h"
+#include "../components/CameraComponent.h"
+#include "../components/SpriteComponent.h"
+#include "../components/TransformComponent.h"
 #include "../core/Map.h"
+#include "../core/Scene.h"
 #include <SDL2/SDL.h>
 #include <entt/entt.hpp>
 #include <iostream>
 
-void renderer_system(Application *app, const Map *map,
-                     entt::entity camera_entity);
+namespace Tiled::Renderer {
 
-void render_sprite(entt::registry &registry, entt::entity &entity,
-                   SDL_Renderer *renderer, const Camera &camera,
-                   const Transform &transform, const Sprite &sprite,
-                   const Size &map_tile_size);
+void system(Scene *scene);
 
-bool in_camera_bound(const Map *map, const Position &position,
-                     const Camera &camera);
+bool in_field_of_view(const Ref<Map> &map, const Position &position,
+                      const CameraComponent &camera,
+                      const TransformComponent &player);
 
-bool is_renderable(const Map *map, const Transform &transform,
-                   const Sprite &sprite);
+bool in_render_range(const Ref<Map> &map, const TransformComponent &transform,
+                     const SpriteComponent &sprite);
+
+void draw(SDL_Renderer *renderer, const TextureCache &textures,
+          const CameraComponent &camera, const TransformComponent &transform,
+          const SpriteComponent &sprite, const Size &map_tile_size);
+} // namespace Tiled::Renderer
 
 #endif // EQUAL_RENDERER_SYSTEM_H

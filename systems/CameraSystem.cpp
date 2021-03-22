@@ -1,18 +1,19 @@
 #include "CameraSystem.h"
 
-void camera_system(Application *app, entt::entity camera_entity,
-                   entt::entity player_entity) {
-  auto &cam = app->registry.get<Camera>(camera_entity);
-  const auto &player_transform = app->registry.get<Transform>(player_entity);
+namespace Tiled::Camera {
 
-  cam.position.x = (player_transform.position.x + player_transform.size.w / 2) -
-                   cam.size.w / 2;
-  cam.position.y = (player_transform.position.y + player_transform.size.h / 2) -
-                   cam.size.h / 2;
+void system(Scene *scene) {
+  const auto &player_transform =
+      scene->registry->get<TransformComponent>(scene->player);
 
-
-#ifdef DEBUG_CAMERA_SYSTEM
-  printf("CameraSystem <- (%i %i) (%i %i)\n", cam.position.x, cam.position.y,
-         cam.size.w, cam.size.h);
-#endif
+  scene->registry->patch<CameraComponent>(
+      scene->camera, [player_transform](CameraComponent &camera) {
+        camera.position = Position{
+            (player_transform.position.x + player_transform.size.w / 2) -
+                camera.size.w / 2,
+            (player_transform.position.y + player_transform.size.h / 2) -
+                camera.size.h / 2};
+      });
 }
+
+} // namespace Tiled::Camera

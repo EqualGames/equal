@@ -1,11 +1,16 @@
 #ifndef EQUAL_CAMERA_SYSTEM_H
 #define EQUAL_CAMERA_SYSTEM_H
 
-#include "../components/Camera.h"
-#include "../components/Transform.h"
-#include "../core/Application.h"
-#include <entt/entt.hpp>
+#include "../components/CameraComponent.h"
+#include "../components/TransformComponent.h"
+#include "../core/Scene.h"
+#include "../core/Types.h"
+#include <entt/entity/registry.hpp>
 
-void camera_system(Application *app, entt::entity camera_entity, entt::entity player_entity);
+namespace Tiled::Camera {
+
+void system(Scene *scene);
+
+} // namespace Tiled::Camera
 
 #endif // EQUAL_CAMERA_SYSTEM_H

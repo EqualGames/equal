@@ -1,30 +1,5 @@
 #include "Helpers.h"
 
-SDL_Texture *load_texture(SDL_Renderer *renderer, const std::string &path) {
-  SDL_Surface *image = IMG_Load(path.c_str());
-  SDL_Texture *texture = nullptr;
-
-  if (image == nullptr) {
-    printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(),
-           IMG_GetError());
-  } else {
-
-    SDL_SetColorKey(image, SDL_TRUE, SDL_MapRGB(image->format, 0, 0xFF, 0xFF));
-
-    texture = SDL_CreateTextureFromSurface(renderer, image);
-
-    if (texture == nullptr) {
-      printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(),
-             SDL_GetError());
-    }
-
-    SDL_FreeSurface(image);
-    image = nullptr;
-  }
-
-  return texture;
-}
-
 void replace(std::string &text, const std::string &search,
              const std::string &replace) {
   size_t f = text.find(search);

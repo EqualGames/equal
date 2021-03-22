@@ -1,8 +1,8 @@
-#ifndef EQUAL_SPRITE_H
-#define EQUAL_SPRITE_H
+#ifndef EQUAL_SPRITE_COMPONENT_H
+#define EQUAL_SPRITE_COMPONENT_H
 
 #include "../core/Types.h"
-#include <SDL2/SDL.h>
+#include <entt/core/hashed_string.hpp>
 #include <tuple>
 #include <vector>
 
@@ -12,12 +12,12 @@ enum SpriteRenderType {
   FULL,
 };
 
-struct Sprite {
+struct SpriteComponent {
   int depth{0};
   Direction direction{Direction::Down};
   SpriteRenderType render_type{SpriteRenderType::FULL};
   Color color{};
-  std::vector<std::tuple<SDL_Texture *, Position, Size>> textures{};
+  std::vector<std::tuple<entt::hashed_string, Position, Size>> textures{};
 };
 
-#endif // EQUAL_SPRITE_H
+#endif // EQUAL_SPRITE_COMPONENT_H
