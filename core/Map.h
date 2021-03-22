@@ -1,13 +1,14 @@
 #ifndef EQUAL_MAP_H
 #define EQUAL_MAP_H
 
-#include "../components/RigidBody.h"
-#include "../components/Sprite.h"
-#include "../components/Transform.h"
+#include "../components/RigidBodyComponent.h"
+#include "../components/SpriteComponent.h"
+#include "../components/TransformComponent.h"
+#include "../core/Application.h"
 #include "../core/Helpers.h"
+#include "../core/Scene.h"
 #include "../core/Types.h"
 #include <SDL2/SDL.h>
-#include <array>
 #include <cstdint>
 #include <entt/entt.hpp>
 #include <map>
@@ -38,8 +39,7 @@ struct Map {
   std::vector<Tileset> tilesets{};
   std::vector<Tile *> tiles{};
 
-  Map(entt::registry &registry, const char *source, const char *types_source,
-      SDL_Renderer *renderer);
+  Map(Scene *scene, const char *source, const char *types_source);
 
   Tileset &get_tileset(uint32_t gid);
 
@@ -96,7 +96,7 @@ struct Tileset {
   uint32_t first_gid{0};
   Size tile_size{32, 32};
   Size texture_size{0, 0};
-  SDL_Texture *texture{nullptr};
+  entt::hashed_string texture{};
 
   SDL_Rect get_texture_position(uint32_t gid);
 };

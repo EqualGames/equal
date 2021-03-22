@@ -1,50 +1,48 @@
 #include "InputSystem.h"
 
-float keypress_time = 0.0f;
-void input_system(Application *app, Map *map, entt::entity player_entity) {
+namespace Tiled::Input {
 
-  if (keypress_time < g_keypress_delay) {
-    keypress_time += app->deltaTime;
+float keypress_time = 0.0f;
+
+void system(Scene *scene) {
+  if (keypress_time < KEY_PRESSED_DELAY) {
+    keypress_time += scene->app->deltaTime;
     return;
   }
 
   keypress_time = 0.0f;
 
-  bool some_key_active = app->direction.up || app->direction.down ||
-                         app->direction.left || app->direction.right;
+  bool some_key_active =
+      scene->app->direction.up || scene->app->direction.down ||
+      scene->app->direction.left || scene->app->direction.right;
 
   if (some_key_active) {
-    auto [player, transform, sprite] =
-        app->registry.get<Player, Transform, Sprite>(player_entity);
+    const auto &transform =
+        scene->registry->get<TransformComponent>(scene->player);
 
-    if (app->direction.up) {
-      sprite.direction = Direction::Up;
-    } else if (app->direction.down) {
-      sprite.direction = Direction::Down;
-    } else if (app->direction.left) {
-      sprite.direction = Direction::Left;
-    } else if (app->direction.right) {
-      sprite.direction = Direction::Right;
-    }
+    auto position = scene->map->get_next_tile(scene->player, transform.position,
+                                              scene->app->direction);
+    auto tile = scene->map->get_tile(position);
 
-#ifdef DEBUG_INPUT_SYSTEM
-    Position last_position = transform.position;
-#endif
+    scene->registry->patch<SpriteComponent>(
+        scene->player, [tile, scene](SpriteComponent &sprite) {
+          if (scene->app->direction.up) {
+            sprite.direction = Direction::Up;
+          } else if (scene->app->direction.down) {
+            sprite.direction = Direction::Down;
+          } else if (scene->app->direction.left) {
+            sprite.direction = Direction::Left;
+          } else if (scene->app->direction.right) {
+            sprite.direction = Direction::Right;
+          }
 
-    auto position =
-        map->get_next_tile(player_entity, transform.position, app->direction);
-    auto tile = map->get_tile(position);
+          sprite.depth = Map::make_depth(tile, ThingOrder::CREATURE);
+        });
 
-    transform.position = position;
-    sprite.depth = Map::make_depth(tile, ThingOrder::CREATURE);
-
-#ifdef DEBUG_INPUT_SYSTEM
-    printf("InputSystem <- Direction(%i %i) (%i %i)\n", direction.up,
-           direction.down, direction.left, direction.right);
-
-    printf("InputSystem <- from (%i %i) to (%i %i)\n", last_position.x,
-           last_position.y, transform.position.x, transform.position.y);
-#endif
+    scene->registry->patch<TransformComponent>(
+        scene->player, [position](TransformComponent &transform) {
+          transform.position = position;
+        });
   }
 }
-
+} // namespace Tiled::Input

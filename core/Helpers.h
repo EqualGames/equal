@@ -8,8 +8,6 @@
 #include <string_view>
 #include <utility>
 
-SDL_Texture *load_texture(SDL_Renderer *renderer, const std::string &path);
-
 void replace(std::string &text, const std::string &search,
              const std::string &replace);
 

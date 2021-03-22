@@ -1,17 +1,14 @@
 #include "Application.h"
 
 bool Application::init() {
+
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
     printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
     return false;
   }
 
-  if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0")) {
-    printf("Warning: Linear texture filtering not enabled!");
-  }
-
-  this->window = SDL_CreateWindow("Equal Games", SDL_WINDOWPOS_CENTERED,
-                                  SDL_WINDOWPOS_CENTERED, this->window_size.w,
+  this->window = SDL_CreateWindow("Equal Games", SDL_WINDOWPOS_UNDEFINED,
+                                  SDL_WINDOWPOS_UNDEFINED, this->window_size.w,
                                   this->window_size.h, SDL_WINDOW_SHOWN);
 
   if (window == nullptr) {
@@ -19,11 +16,25 @@ bool Application::init() {
     return false;
   }
 
+  if (fullscreen) {
+    SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+  }
+
   this->renderer = SDL_CreateRenderer(
       this->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
   if (this->renderer == nullptr) {
     printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
+    return false;
+  }
+
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+  SDL_SetHint(SDL_HINT_RENDER_LOGICAL_SIZE_MODE, "letterbox");
+
+  if (SDL_RenderSetLogicalSize(this->renderer, this->window_size.w,
+                               this->window_size.h)) {
+    printf("SDL could not set the render logical size! SDL_Error: %s\n",
+           SDL_GetError());
     return false;
   }
 
@@ -39,10 +50,11 @@ bool Application::init() {
 
 void Application::set_scene(Scene *p_scene) {
   if (this->scene) {
-    this->registry.clear();
+    this->scene->registry->clear();
+    this->scene->textures.clear();
   }
   this->scene = p_scene;
-  this->scene->app = this;
+  this->scene->app = (Ref<Application>)this;
   this->scene->init();
 }
 
@@ -55,6 +67,10 @@ int Application::run() {
   }
 
   Timer timer;
+#ifdef DEBUG_FPS
+  float minFPS = 60.0f;
+  float maxFPS = -60.0f;
+#endif
 
   while (this->running) {
     timer.start();
@@ -84,9 +100,21 @@ int Application::run() {
       SDL_Delay(diff * 1000.0f);
     }
 
-    auto fps = 1000.0f / timer.get_ticks();
-    printf("FPS: %.0f\n", fps);
+#ifdef DEBUG_FPS
+    float fps = 1000.0f / timer.get_ticks();
+    if (fps < minFPS) {
+      minFPS = fps;
+    }
+
+    if (fps > maxFPS) {
+      maxFPS = fps;
+    }
+#endif
   }
+
+#ifdef DEBUG_FPS
+  printf("FPS: min %.0f  max %.0f\n", minFPS, maxFPS);
+#endif
 
   this->scene = nullptr;
   this->renderer = nullptr;

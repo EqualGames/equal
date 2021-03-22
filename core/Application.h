@@ -13,10 +13,8 @@
 const int g_joystick_dead_zone = SDL_JOYSTICK_AXIS_MAX / 100 * 20;
 
 struct Application {
-  // ECS
-  entt::registry registry;
-
   // Configuration
+  bool fullscreen{false};
   Size window_size{800, 600};
 
   // Status
@@ -33,8 +31,10 @@ struct Application {
   Application() = default;
 
   Application(Scene *scene) : scene(scene) {}
-  Application(Scene *scene, Size size) : scene(scene), window_size(size) {}
-  Application(Size size) : window_size(size) {}
+  Application(Size size, bool fullscreen = false)
+      : window_size(size), fullscreen(fullscreen) {}
+  Application(Scene *scene, Size size, bool fullscreen = false)
+      : scene(scene), window_size(size), fullscreen(fullscreen) {}
 
   bool init();
 

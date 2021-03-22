@@ -1,58 +1,48 @@
 #include "RendererSystem.h"
 
-void renderer_system(Application *app, const Map *map,
-                     entt::entity camera_entity) {
-
-  app->registry.sort<Sprite>([](const Sprite &left, const Sprite &right) {
-    return left.depth < right.depth;
-  });
-
-  app->registry.sort<Transform>(
-      [](const Transform &left, const Transform &right) {
-        return left.position.z < right.position.z;
-      });
-
-  const auto &camera = app->registry.get<Camera>(camera_entity);
-  auto entities = app->registry.view<const Sprite, const Transform>();
+namespace Tiled::Renderer {
+void system(Scene *scene) {
+  const auto &camera = scene->registry->get<CameraComponent>(scene->camera);
+  const auto &player = scene->registry->get<TransformComponent>(scene->player);
+  auto entities =
+      scene->registry->view<const SpriteComponent, const TransformComponent>();
 
   for (auto [entity, sprite, transform] : entities.each()) {
-    bool need_to_render = in_camera_bound(map, transform.position, camera) &&
-                          is_renderable(map, transform, sprite);
+    bool need_to_render =
+        in_field_of_view(scene->map, transform.position, camera, player) &&
+        in_render_range(scene->map, transform, sprite);
 
     if (need_to_render) {
-      render_sprite(app->registry, entity, app->renderer, camera, transform,
-                    sprite, map->tile_size);
+      draw(scene->app->renderer, scene->textures, camera, transform, sprite,
+           scene->map->tile_size);
     }
   }
 }
 
-bool in_camera_bound(const Map *map, const Position &position,
-                     const Camera &camera) {
+bool in_field_of_view(const Ref<Map> &map, const Position &position,
+                      const CameraComponent &camera,
+                      const TransformComponent &player) {
+
+  if (player.position.z > position.z) {
+    return false;
+  }
+
   return position.x >= camera.position.x - map->tile_size.w &&
          position.y >= camera.position.y - map->tile_size.h &&
          position.x <= camera.position.x + camera.size.w &&
          position.y <= camera.position.y + camera.size.h;
 }
 
-bool is_renderable(const Map *map, const Transform &transform,
-                   const Sprite &sprite) {
+bool in_render_range(const Ref<Map> &map, const TransformComponent &transform,
+                     const SpriteComponent &sprite) {
   int depth = map->get_depth(sprite.depth, transform.position);
 
   return depth < Map::MAX_TILE_VISIBLE_ENTITIES;
 }
 
-void render_sprite(entt::registry &registry, entt::entity &entity,
-                   SDL_Renderer *renderer, const Camera &camera,
-                   const Transform &transform, const Sprite &sprite,
-                   const Size &map_tile_size) {
-
-#ifdef DEBUG_RENDER_SYSTEM
-  printf("RenderSystem <- Camera(%i %i) (%i %i)\n", camera.position.x,
-         camera.position.y, camera.size.w, camera.size.h);
-  printf("RenderSystem <- Transform(%i %i) (%i %i)\n", transform.position.x,
-         transform.position.y, transform.size.w, transform.size.h);
-#endif
-
+void draw(SDL_Renderer *renderer, const TextureCache &textures,
+          const CameraComponent &camera, const TransformComponent &transform,
+          const SpriteComponent &sprite, const Size &map_tile_size) {
   SDL_Rect target_rect{
       transform.position.x - camera.position.x,
       transform.position.y - camera.position.y,
@@ -69,11 +59,6 @@ void render_sprite(entt::registry &registry, entt::entity &entity,
     target_rect.y -= (target_rect.h / map_tile_size.h) * (map_tile_size.h / 2);
   }
 
-#ifdef DEBUG_RENDER_SYSTEM
-  printf("RenderSystem <- SDL_Rect(%i %i) (%i %i)\n", target_rect.x,
-         target_rect.y, target_rect.w, target_rect.h);
-#endif
-
   if (sprite.textures.empty()) {
     const auto &color = sprite.color;
 
@@ -83,29 +68,23 @@ void render_sprite(entt::registry &registry, entt::entity &entity,
     return;
   }
 
-  auto [texture, tex_pos, tex_size] = sprite.textures.at(0);
+  auto [texture_id, crop_position, crop_size] = sprite.textures.at(0);
+
+  if (!textures.contains(texture_id)) {
+    printf("Texture not found\n");
+    return;
+  }
+
+  auto handle = textures.handle(texture_id);
+  auto &texture = handle.get();
 
   SDL_Rect texture_rect{
-      tex_pos.x,
-      tex_pos.y,
-      tex_size.w,
-      tex_size.h,
+      crop_position.x,
+      crop_position.y,
+      crop_size.w,
+      crop_size.h,
   };
 
-  SDL_RenderCopy(renderer, texture, &texture_rect, &target_rect);
-
-#ifdef DEBUG_COLLISION
-  if (registry.has<RigidBody>(entity)) {
-    const auto &rb = registry.get<RigidBody>(entity);
-    SDL_Rect collision{
-        .x = rb.position.x - camera.position.x,
-        .y = rb.position.y - camera.position.y,
-        .w = rb.size.w,
-        .h = rb.size.h,
-    };
-
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    SDL_RenderDrawRect(renderer, &collision);
-  }
-#endif
+  SDL_RenderCopy(renderer, texture.data.get(), &texture_rect, &target_rect);
 }
+} // namespace Tiled::Renderer

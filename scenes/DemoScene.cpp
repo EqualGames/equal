@@ -1,20 +1,32 @@
 #include "DemoScene.h"
 
-void DemoScene::init() {
-  {
-    this->camera = this->app->registry.create();
+void reorder_sprites(entt::registry &registry) {
+  registry.sort<SpriteComponent>(
+      [](const SpriteComponent &left, const SpriteComponent &right) {
+        return left.depth < right.depth;
+      });
+}
 
-    auto &cam = this->app->registry.emplace<Camera>(this->camera);
+void DemoScene::init() {
+  this->registry->on_construct<SpriteComponent>().connect<&reorder_sprites>();
+  this->registry->on_update<SpriteComponent>().connect<&reorder_sprites>();
+
+  this->textures.load<TextureLoader>(entt::hashed_string{"player"},
+                                     this->app->renderer,
+                                     "assets/NPC_test.png");
+
+  {
+    this->camera = this->registry->create();
+
+    auto &cam = this->registry->emplace<CameraComponent>(this->camera);
     cam.position = Position{};
-    cam.size = app->window_size;
+    cam.size = this->app->window_size;
   }
 
-  Position player_position{};
-
   {
-    this->player = this->app->registry.create();
+    this->player = this->registry->create();
 
-    auto &input = this->app->registry.emplace<Player>(player);
+    auto &input = this->registry->emplace<PlayerComponent>(player);
 
     if (SDL_NumJoysticks() > 0) {
       if (SDL_IsGameController(input.id)) {
@@ -29,27 +41,26 @@ void DemoScene::init() {
       }
     }
 
-    auto &transform = this->app->registry.emplace<Transform>(this->player);
+    auto &transform = this->registry->emplace<TransformComponent>(this->player);
     transform.size = Size{32, 64};
-    transform.position = player_position;
+    transform.position = Position{};
 
-    auto &sprite = this->app->registry.emplace<Sprite>(this->player);
+    auto &sprite = this->registry->emplace<SpriteComponent>(this->player);
     sprite.color = Color{255, 255, 255};
 
-    sprite.textures.emplace_back(std::make_tuple(
-        load_texture(this->app->renderer, "assets/NPC_test.png"), Position{},
-        Size{16, 32}));
+    sprite.textures.emplace_back(std::make_tuple(entt::hashed_string{"player"},
+                                                 Position{}, Size{16, 32}));
   }
 
   {
-    this->map = new Map(this->app->registry, "assets/map/demo.tmx",
-                        "assets/map/objecttypes.xml", this->app->renderer);
-    this->map->attach(this->app->registry, this->player);
+    this->map = make_ref<Map>(this, "assets/map/demo.tmx",
+                              "assets/map/objecttypes.xml");
+    this->map->attach(*this->registry.get(), this->player);
   }
 }
 
 void DemoScene::update() {
-  input_system(this->app, this->map, this->player);
-  camera_system(this->app, this->camera, this->player);
-  renderer_system(this->app,  this->map, this->camera);
+  Tiled::Input::system(this);
+  Tiled::Camera::system(this);
+  Tiled::Renderer::system(this);
 }
