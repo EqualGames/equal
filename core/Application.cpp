@@ -2,213 +2,152 @@
 
 bool Application::init() {
 
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
-    printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-    return false;
-  }
-
-  this->window = SDL_CreateWindow("Equal Games", SDL_WINDOWPOS_UNDEFINED,
-                                  SDL_WINDOWPOS_UNDEFINED, this->window_size.w,
-                                  this->window_size.h, SDL_WINDOW_SHOWN);
-
-  if (window == nullptr) {
-    printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-    return false;
-  }
+  sf::VideoMode mode;
+  uint32_t flags;
 
   if (fullscreen) {
-    SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    mode = sf::VideoMode::getDesktopMode();
+    flags = sf::Style::None;
+  } else {
+    mode = sf::VideoMode{800, 600};
+    flags = sf::Style::Default;
   }
 
-  this->renderer = SDL_CreateRenderer(
-      this->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  window = make_ref<sf::RenderWindow>(mode, title, flags);
+  window->setFramerateLimit((uint32_t)limit_fps);
+  window->setVerticalSyncEnabled(vsync);
+  window->setKeyRepeatEnabled(true);
 
-  if (this->renderer == nullptr) {
-    printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-    return false;
-  }
+  adjust_scale({mode.width, mode.height});
 
-  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-  SDL_SetHint(SDL_HINT_RENDER_LOGICAL_SIZE_MODE, "letterbox");
-
-  if (SDL_RenderSetLogicalSize(this->renderer, this->window_size.w,
-                               this->window_size.h)) {
-    printf("SDL could not set the render logical size! SDL_Error: %s\n",
-           SDL_GetError());
-    return false;
-  }
-
-  int imgFlags = IMG_INIT_PNG;
-  if (!(IMG_Init(imgFlags) & imgFlags)) {
-    printf("SDL_image could not initialize! SDL_image Error: %s\n",
-           IMG_GetError());
-    return false;
-  }
+  ImGui::SFML::Init(*window.get());
 
   return true;
 }
 
-void Application::set_scene(Scene *p_scene) {
-  if (this->scene) {
-    this->scene->registry->clear();
-    this->scene->textures.clear();
-  }
-  this->scene = p_scene;
-  this->scene->app = (Ref<Application>)this;
-  this->scene->init();
+void Application::adjust_scale(const SizeFloat &screen_size) {
+  SizeFloat left_top = ((screen_size - viewport_size) / 2.0f);
+
+  sf::View view;
+
+  view.setSize(viewport_size.to_sfml());
+  view.setCenter((viewport_size / 2).to_sfml());
+  view.setViewport(
+      {{left_top.w / screen_size.w, left_top.h / screen_size.h},
+       {viewport_size.w / screen_size.w, viewport_size.h / screen_size.h}});
+
+  window->setView(view);
 }
 
-const float SCREEN_TICKS_PER_FRAME = 0.016f;
+void Application::set_scene(Scene *p_scene) {
+  scene = p_scene;
+  scene->app = (Ref<Application>)this;
+  scene->init();
+}
 
 int Application::run() {
-  if (this->scene == nullptr) {
-    printf("Invalid scene");
-    return 1;
+  if (scene == nullptr) {
+    EQ_THROW("Invalid scene\n");
   }
 
-  Timer timer;
-#ifdef DEBUG_FPS
-  float minFPS = 60.0f;
-  float maxFPS = -60.0f;
+  sf::Clock clock;
+  sf::Event event{};
+
+  while (window->isOpen()) {
+    sf::Time elapsed = clock.restart();
+
+    while (window->pollEvent(event)) {
+      if (event.type == sf::Event::Closed) {
+        window->close();
+      }
+
+      if (event.type == sf::Event::Resized) {
+        adjust_scale({event.size.width, event.size.height});
+      }
+
+#ifdef DEV_TOOLS
+      if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code == sf::Keyboard::Escape) {
+          window->close();
+        }
+
+        if (event.key.code == sf::Keyboard::F1) {
+          tools = !tools;
+        }
+      }
 #endif
 
-  while (this->running) {
-    timer.start();
+      scene->event(event);
+      ImGui::SFML::ProcessEvent(event);
+    }
 
-    while (SDL_PollEvent(&this->event) != 0) {
-      if (event.type == SDL_QUIT ||
-          event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
-        this->running = false;
-      } else {
-        this->update_joystick();
-        this->update_keyboard();
+    window->clear(sf::Color::Black);
+
+    scene->update(elapsed.asSeconds());
+    ImGui::SFML::Update(*window, elapsed);
+
+#ifdef DEV_TOOLS
+    {
+      // Calculate FPS
+      {
+        float fps =
+            std::min(limit_fps, std::max(0.0f, 1.f / elapsed.asSeconds()));
+
+        if (frames.size() > 100) {
+          for (size_t i = 1; i < frames.size(); i++) {
+            frames[i - 1] = frames[i];
+          }
+
+          frames[frames.size() - 1] = fps;
+        } else {
+          frames.push_back(fps);
+        }
+
+        if (fps < min_fps && frames.size() > 90) {
+          min_fps = fps;
+        }
+
+        if (fps > max_fps && fps <= limit_fps) {
+          max_fps = fps;
+        }
+
+        avg_fps += (fps - avg_fps) / frames.size();
+      }
+
+      if (tools) {
+        ImGui::Begin("Developer Tools", &tools);
+        ImGui::SetWindowSize({300, 300}, ImGuiCond_FirstUseEver);
+        ImGui::SetWindowPos({0, 0}, ImGuiCond_FirstUseEver);
+        ImGui::Text("Loading: %s", scene->loading ? "true" : "false");
+
+        ImGui::BeginGroup();
+        ImGui::Columns(3);
+
+        ImGui::Text("FPS: %.2f", avg_fps);
+
+        ImGui::NextColumn();
+        ImGui::Text("Min: %.2f", min_fps);
+
+        ImGui::NextColumn();
+        ImGui::Text("Max: %.2f", max_fps);
+
+        ImGui::Columns();
+        ImGui::EndGroup();
+
+        ImGui::PlotHistogram("", &frames[0], frames.size(), 0, nullptr, 0.0f,
+                             limit_fps, {300, limit_fps});
+        ImGui::End();
       }
     }
-
-    SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 0);
-    SDL_RenderClear(this->renderer);
-
-    scene->update();
-
-    SDL_RenderPresent(this->renderer);
-
-    this->deltaTime = timer.get_ticks() / 1000.0f;
-
-    if (this->deltaTime < SCREEN_TICKS_PER_FRAME) {
-      float diff = SCREEN_TICKS_PER_FRAME - this->deltaTime;
-
-      SDL_Delay(diff * 1000.0f);
-    }
-
-#ifdef DEBUG_FPS
-    float fps = 1000.0f / timer.get_ticks();
-    if (fps < minFPS) {
-      minFPS = fps;
-    }
-
-    if (fps > maxFPS) {
-      maxFPS = fps;
-    }
 #endif
+
+    scene->draw(this->window);
+    ImGui::SFML::Render(*window);
+
+    window->display();
   }
 
-#ifdef DEBUG_FPS
-  printf("FPS: min %.0f  max %.0f\n", minFPS, maxFPS);
-#endif
-
-  this->scene = nullptr;
-  this->renderer = nullptr;
-  SDL_DestroyWindow(this->window);
-  this->window = nullptr;
-  SDL_Quit();
+  ImGui::SFML::Shutdown();
 
   return 0;
-}
-
-void Application::update_joystick() {
-  if (event.type != SDL_JOYAXISMOTION) {
-    return;
-  }
-
-  if (event.jaxis.value > g_joystick_dead_zone ||
-      event.jaxis.value < -g_joystick_dead_zone) {
-    auto value = normalize_axis(event.jaxis.value);
-
-    if (event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY) {
-      if (value < 0) {
-        direction.up = true;
-      }
-
-      if (value > 0) {
-        direction.down = true;
-      }
-    }
-
-    if (event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTX) {
-      if (value < 0) {
-        direction.left = true;
-      }
-
-      if (value > 0) {
-        direction.right = true;
-      }
-    }
-  } else {
-    if (event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTY) {
-      direction.up = false;
-      direction.down = false;
-    }
-
-    if (event.jaxis.axis == SDL_CONTROLLER_AXIS_LEFTX) {
-      direction.left = false;
-      direction.right = false;
-    }
-  }
-}
-
-void Application::update_keyboard() {
-  if (event.type != SDL_KEYDOWN && event.type != SDL_KEYUP) {
-    return;
-  }
-
-  auto isUp = event.key.keysym.scancode == SDL_SCANCODE_UP;
-  auto isDown = event.key.keysym.scancode == SDL_SCANCODE_DOWN;
-  auto isLeft = event.key.keysym.scancode == SDL_SCANCODE_LEFT;
-  auto isRight = event.key.keysym.scancode == SDL_SCANCODE_RIGHT;
-
-  if (event.type == SDL_KEYDOWN) {
-    if (isUp) {
-      direction.up = true;
-    }
-
-    if (isDown) {
-      direction.down = true;
-    }
-
-    if (isLeft) {
-      direction.left = true;
-    }
-
-    if (isRight) {
-      direction.right = true;
-    }
-  }
-
-  if (event.type == SDL_KEYUP) {
-    if (isUp) {
-      direction.up = false;
-    }
-
-    if (isDown) {
-      direction.down = false;
-    }
-
-    if (isLeft) {
-      direction.left = false;
-    }
-
-    if (isRight) {
-      direction.right = false;
-    }
-  }
 }

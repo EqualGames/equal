@@ -1,6 +1,7 @@
 #include "DemoScene.h"
 
-void reorder_sprites(entt::registry &registry) {
+void DemoScene::on_sprite_update(entt::registry &registry,
+                                 entt::entity entity) {
   registry.sort<SpriteComponent>(
       [](const SpriteComponent &left, const SpriteComponent &right) {
         return left.depth < right.depth;
@@ -8,59 +9,83 @@ void reorder_sprites(entt::registry &registry) {
 }
 
 void DemoScene::init() {
-  this->registry->on_construct<SpriteComponent>().connect<&reorder_sprites>();
-  this->registry->on_update<SpriteComponent>().connect<&reorder_sprites>();
+  EQ_LOG("Registering the ECS listeners\n");
 
-  this->textures.load<TextureLoader>(entt::hashed_string{"player"},
-                                     this->app->renderer,
-                                     "assets/NPC_test.png");
+  registry.on_construct<SpriteComponent>()
+      .connect<&DemoScene::on_sprite_update>(this);
+  registry.on_update<SpriteComponent>().connect<&DemoScene::on_sprite_update>(
+      this);
 
-  {
-    this->camera = this->registry->create();
+  EQ_LOG("Registering the camera\n");
 
-    auto &cam = this->registry->emplace<CameraComponent>(this->camera);
-    cam.position = Position{};
-    cam.size = this->app->window_size;
-  }
+  camera = registry.create();
+  registry.emplace<TagComponent>(camera, "Camera");
+  auto &camera_component = registry.emplace<CameraComponent>(camera);
+  camera_component.position = Position{};
+  camera_component.size = app->viewport_size;
 
-  {
-    this->player = this->registry->create();
+  EQ_LOG("Registering the player\n");
 
-    auto &input = this->registry->emplace<PlayerComponent>(player);
+  player = registry.create();
+  registry.emplace<TagComponent>(player, "Player");
+  auto &player_component = registry.emplace<PlayerComponent>(player);
 
-    if (SDL_NumJoysticks() > 0) {
-      if (SDL_IsGameController(input.id)) {
-        input.controller = SDL_GameControllerOpen(input.id);
-        input.joystick = SDL_GameControllerGetJoystick(input.controller);
-        input.joystick_instance_id = SDL_JoystickInstanceID(input.joystick);
-      } else {
-        input.joystick = SDL_JoystickOpen(input.id);
-        input.joystick_instance_id = SDL_JoystickInstanceID(input.joystick);
-        input.controller =
-            SDL_GameControllerFromInstanceID(input.joystick_instance_id);
-      }
-    }
+  auto &player_transform = registry.emplace<TransformComponent>(player);
+  player_transform.size = Size{32, 64};
+  player_transform.position = Position{};
 
-    auto &transform = this->registry->emplace<TransformComponent>(this->player);
-    transform.size = Size{32, 64};
-    transform.position = Position{};
+  auto &player_sprite = registry.emplace<SpriteComponent>(player);
+  player_sprite.color = Color{255, 255, 255};
 
-    auto &sprite = this->registry->emplace<SpriteComponent>(this->player);
-    sprite.color = Color{255, 255, 255};
+  player_sprite.texture_id = "player";
+  player_sprite.transform = Transform{{}, Size{16, 32}};
 
-    sprite.textures.emplace_back(std::make_tuple(entt::hashed_string{"player"},
-                                                 Position{}, Size{16, 32}));
-  }
+  EQ_LOG("Loading textures\n");
 
-  {
-    this->map = make_ref<Map>(this, "assets/map/demo.tmx",
-                              "assets/map/objecttypes.xml");
-    this->map->attach(*this->registry.get(), this->player);
+  textures.load(app->window, "assets/player.png");
+  textures.load(app->window, "assets/map/tilesets/grounds.png");
+  textures.load(app->window, "assets/map/tilesets/trees.png");
+  textures.load(app->window, "assets/map/tilesets/walls.png");
+
+  EQ_LOG("Loading map\n");
+
+  map =
+      make_ref<Map>(this, "assets/map/demo.tmx", "assets/map/objecttypes.xml");
+}
+
+void DemoScene::event(const Event &event) {
+  if (!loading) {
+    InputSystem::run(registry, player, event);
   }
 }
 
-void DemoScene::update() {
-  Tiled::Input::system(this);
-  Tiled::Camera::system(this);
-  Tiled::Renderer::system(this);
+void DemoScene::update(float delta_time) {
+  if (loading) {
+    if (map->state.load() == Map::LoadingState::FINISHED &&
+        map->thread->joinable()) {
+
+      map->thread->join();
+      map->thread = nullptr;
+
+      map->attach(registry, player);
+
+      map->state.store(Map::LoadingState::LOADED);
+    }
+
+    if (map->state.load() == Map::LoadingState::LOADED) {
+      loading = false;
+      EQ_LOG("Scene loaded!\n");
+    }
+  }
+
+  if (!loading) {
+    MovementSystem::run(map, registry, player, delta_time);
+    CameraSystem::run(map, registry, camera, player);
+  }
+}
+
+void DemoScene::draw(const Ref<sf::RenderWindow> &renderer) {
+  if (!loading) {
+    RendererSystem::run(this, registry, renderer);
+  }
 }

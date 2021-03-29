@@ -1,19 +1,23 @@
 #include "CameraSystem.h"
 
-namespace Tiled::Camera {
+namespace CameraSystem {
 
-void system(Scene *scene) {
-  const auto &player_transform =
-      scene->registry->get<TransformComponent>(scene->player);
+void run(const Ref<Map> &map, entt::registry &registry,
+         entt::entity camera_entity, entt::entity target_entity) {
+  const auto &target = registry.get<TransformComponent>(target_entity);
 
-  scene->registry->patch<CameraComponent>(
-      scene->camera, [player_transform](CameraComponent &camera) {
-        camera.position = Position{
-            (player_transform.position.x + player_transform.size.w / 2) -
-                camera.size.w / 2,
-            (player_transform.position.y + player_transform.size.h / 2) -
-                camera.size.h / 2};
-      });
+  // ? Converts target position to world position
+  const auto target_position = Position{target.position.x * map->tile_size.w,
+                                        target.position.y * map->tile_size.h};
+
+  auto &camera = registry.get<CameraComponent>(camera_entity);
+
+  if (camera.position != target_position) {
+    const auto camera_size = Position{camera.size.w / 2, camera.size.h / 2};
+    const auto target_size = Position{target.size.w / 2, target.size.h / 2};
+
+    camera.position = target_position + target_size - camera_size;
+  }
 }
 
-} // namespace Tiled::Camera
+} // namespace CameraSystem

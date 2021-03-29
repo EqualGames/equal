@@ -1,104 +1,47 @@
 #ifndef EQUAL_MAP_H
 #define EQUAL_MAP_H
 
+#include "../components/PlayerComponent.h"
 #include "../components/RigidBodyComponent.h"
 #include "../components/SpriteComponent.h"
+#include "../components/TagComponent.h"
 #include "../components/TransformComponent.h"
-#include "../core/Application.h"
-#include "../core/Helpers.h"
-#include "../core/Scene.h"
-#include "../core/Types.h"
-#include <SDL2/SDL.h>
-#include <cstdint>
-#include <entt/entt.hpp>
-#include <map>
+#include "../core/Exception.h"
+#include "../core/Logger.h"
+#include "Application.h"
+#include "Helpers.h"
+#include "Scene.h"
+#include "Tile.h"
+#include "Tileset.h"
+#include "Types.h"
+#include <atomic>
+#include <filesystem>
 #include <pugixml.hpp>
-#include <utility>
+#include <thread>
 #include <vector>
 
-struct Tile;
-struct Tileset;
-
-enum ThingOrder : uint32_t {
-  GROUND = 0,
-  GROUND_BORDER = 1,
-  /* Walls */
-  ON_BOTTOM = 2,
-  /* Doors */
-  ON_TOP = 3,
-  CREATURE = 4,
-  OTHER = 5,
-};
-
 struct Map {
-  static const uint32_t MAX_TILE_VISIBLE_ENTITIES = 6;
-  static const uint32_t MAX_TILE_ENTITIES = 32;
-  static const uint32_t MAX_FLOOR_LAYERS = 32;
-
+  Size size{0, 0};
   Size tile_size{32, 32};
   std::vector<Tileset> tilesets{};
-  std::vector<Tile *> tiles{};
+  std::vector<Ref<Tile>> tiles{};
+
+  enum LoadingState { IDLE = 0, STARTED = 1, FINISHED = 2, LOADED = 3 };
+  std::atomic_int state;
+  Scope<std::thread> thread{nullptr};
 
   Map(Scene *scene, const char *source, const char *types_source);
 
   Tileset &get_tileset(uint32_t gid);
 
   bool has_tile(const Position &position);
-  bool has_tile(const Position &position) const;
-  Tile *get_tile(const Position &position);
-  Tile *get_tile(const Position &position) const;
+  const Ref<Tile> &get_tile(const Position &position);
 
   void attach(entt::registry &registry, entt::entity entity);
-  int get_depth(int sprite_depth, const Position &position) const;
-  static int make_depth(Tile *tile, ThingOrder order);
 
   bool has_collision(const Position &position);
-  Position get_next_tile(entt::entity entity, const Position &position,
-                         const DirectionalStatus &direction);
-};
-
-struct Tile {
-  int index{0};
-  bool collision{false};
-  Position position{0, 0};
-  std::vector<entt::entity> entities{};
-
-  bool operator==(const Tile &right) const {
-    return this->position.x == right.position.x &&
-           this->position.y == right.position.y &&
-           this->position.z == right.position.z;
-  }
-
-  bool operator!=(const Tile &right) const {
-    return this->position.x != right.position.x ||
-           this->position.y != right.position.y ||
-           this->position.z != right.position.z;
-  }
-};
-
-inline ThingOrder get_order_from_type(const std::string &name) {
-  if (name == "Ground") {
-    return ThingOrder::GROUND;
-  }
-
-  if (name == "Wall" || name == "Tree") {
-    return ThingOrder::ON_BOTTOM;
-  }
-
-  if (name == "Creature") {
-    return ThingOrder::CREATURE;
-  }
-
-  return ThingOrder::OTHER;
-}
-
-struct Tileset {
-  uint32_t first_gid{0};
-  Size tile_size{32, 32};
-  Size texture_size{0, 0};
-  entt::hashed_string texture{};
-
-  SDL_Rect get_texture_position(uint32_t gid);
+  const Ref<Tile> &get_next_tile(entt::entity entity, const Position &position,
+                                 const ControllerState &controller);
 };
 
 #endif // EQUAL_MAP_H

@@ -1,8 +1,8 @@
 #ifndef EQUAL_SPRITE_COMPONENT_H
 #define EQUAL_SPRITE_COMPONENT_H
 
+#include "../core/Texture.h"
 #include "../core/Types.h"
-#include <entt/core/hashed_string.hpp>
 #include <tuple>
 #include <vector>
 
@@ -17,7 +17,8 @@ struct SpriteComponent {
   Direction direction{Direction::Down};
   SpriteRenderType render_type{SpriteRenderType::FULL};
   Color color{};
-  std::vector<std::tuple<entt::hashed_string, Position, Size>> textures{};
+  std::string texture_id{};
+  Transform transform{};
 };
 
 #endif // EQUAL_SPRITE_COMPONENT_H

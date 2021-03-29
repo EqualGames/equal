@@ -1,22 +1,36 @@
 #ifndef EQUAL_SCENE_H
 #define EQUAL_SCENE_H
 
-#include "TextureLoader.h"
-#include <entt/entity/registry.hpp>
+#include "Texture.h"
+#include "Types.h"
+#include <SFML/Graphics/RenderWindow.hpp>
 
 struct Map;
 struct Application;
 
 struct Scene {
-  Ref<entt::registry> registry{make_ref<entt::registry>()};
-  TextureCache textures{};
-  entt::entity player;
-  entt::entity camera;
+  // ECS
+  entt::registry registry;
+  entt::entity player{entt::null};
+  entt::entity camera{entt::null};
+
+  // Data
+  bool loading{true};
   Ref<Map> map{nullptr};
   Ref<Application> app{nullptr};
+  TextureManager textures{};
+
+  virtual ~Scene() {
+    registry.clear();
+    textures.clear();
+    map = nullptr;
+    app = nullptr;
+  }
 
   virtual void init() = 0;
-  virtual void update() = 0;
+  virtual void event(const Event &event) = 0;
+  virtual void update(float delta_time) = 0;
+  virtual void draw(const Ref<sf::RenderWindow> &renderer) = 0;
 };
 
 #endif // EQUAL_SCENE_H

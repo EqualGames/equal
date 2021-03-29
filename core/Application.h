@@ -2,61 +2,54 @@
 #define EQUAL_APPLICATION_H
 
 #include "Scene.h"
-#include "Timer.h"
 #include "Types.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_timer.h>
+#include "imgui-SFML.h"
+#include "imgui.h"
+#include <SFML/Graphics.hpp>
 #include <entt/entt.hpp>
+#include <queue>
 #include <string>
 
-const int g_joystick_dead_zone = SDL_JOYSTICK_AXIS_MAX / 100 * 20;
-
 struct Application {
-  // Configuration
-  bool fullscreen{false};
-  Size window_size{800, 600};
-
-  // Status
+private:
+  std::string title{"Equal Games"};
   Scene *scene{nullptr};
-  DirectionalStatus direction;
-  bool running{true};
-  float deltaTime{0.0f};
 
-  // SDL
-  SDL_Window *window{nullptr};
-  SDL_Event event{};
-  SDL_Renderer *renderer{nullptr};
+#ifdef DEBUG
+  bool fullscreen{false};
+#else
+  bool fullscreen{true};
+#endif
+
+#ifdef DEV_TOOLS
+  bool tools{false};
+  float limit_fps = 120.0f;
+  float min_fps{limit_fps};
+  float avg_fps{limit_fps};
+  float max_fps{-limit_fps};
+  std::vector<float> frames;
+  bool vsync{false};
+#else
+  bool vsync{true};
+  float limit_fps = 60.0f;
+#endif
+
+public:
+  Ref<sf::RenderWindow> window{nullptr};
+  SizeFloat viewport_size{1024, 768};
 
   Application() = default;
 
-  Application(Scene *scene) : scene(scene) {}
-  Application(Size size, bool fullscreen = false)
-      : window_size(size), fullscreen(fullscreen) {}
-  Application(Scene *scene, Size size, bool fullscreen = false)
-      : scene(scene), window_size(size), fullscreen(fullscreen) {}
+  explicit Application(const Size &size, bool fullscreen = false)
+      : viewport_size(size), fullscreen(fullscreen) {}
 
   bool init();
+
+  void adjust_scale(const SizeFloat &screen_size);
 
   void set_scene(Scene *scene);
 
   int run();
-
-  void update_joystick();
-
-  void update_keyboard();
-
-  inline int normalize_axis(int val) {
-    if (val > 0) {
-      return 1;
-    }
-
-    if (val < 0) {
-      return -1;
-    }
-
-    return 0;
-  }
 };
 
 #endif // EQUAL_APPLICATION_H

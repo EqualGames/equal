@@ -1,5 +1,5 @@
 {
-    "activeFile": "",
+    "activeFile": "demo.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -9,11 +9,11 @@
             "scaleInEditor": 1
         },
         "demo.tmx": {
-            "scale": 1.5,
+            "scale": 0.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 292.33333333333337,
-                "y": 137.33333333333334
+                "x": 921,
+                "y": 778
             }
         },
         "demo.tmx#Grounds": {
@@ -36,6 +36,7 @@
         }
     },
     "openFiles": [
+        "demo.tmx"
     ],
     "project": "demo.tiled-project",
     "recentFiles": [

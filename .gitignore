@@ -4,3 +4,6 @@
 # build
 /cmake-build-debug/
 /cmake-build-release/
+
+# imgui
+imgui.ini
