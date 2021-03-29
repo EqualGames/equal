@@ -4,27 +4,28 @@
 
 #include "../components/CameraComponent.h"
 #include "../components/SpriteComponent.h"
+#include "../components/TagComponent.h"
 #include "../components/TransformComponent.h"
+#include "../core/Logger.h"
 #include "../core/Map.h"
 #include "../core/Scene.h"
-#include <SDL2/SDL.h>
+#include <SFML/Graphics.hpp>
 #include <entt/entt.hpp>
-#include <iostream>
 
-namespace Tiled::Renderer {
+namespace RendererSystem {
 
-void system(Scene *scene);
+void run(Scene *scene, entt::registry &registry,
+         const Ref<sf::RenderWindow> &renderer);
 
-bool in_field_of_view(const Ref<Map> &map, const Position &position,
-                      const CameraComponent &camera,
-                      const TransformComponent &player);
+/**
+ * Check the position is into camera bounds
+ */
+bool in_field_of_view(const Position &position, const Rect &camera_bounds);
 
-bool in_render_range(const Ref<Map> &map, const TransformComponent &transform,
-                     const SpriteComponent &sprite);
+void draw(const Ref<sf::RenderWindow> &renderer,
+          const TransformFloat &transform, const SpriteComponent &sprite,
+          const Ref<sf::Texture> &texture);
 
-void draw(SDL_Renderer *renderer, const TextureCache &textures,
-          const CameraComponent &camera, const TransformComponent &transform,
-          const SpriteComponent &sprite, const Size &map_tile_size);
-} // namespace Tiled::Renderer
+} // namespace RendererSystem
 
 #endif // EQUAL_RENDERER_SYSTEM_H

@@ -1,90 +1,89 @@
 #include "RendererSystem.h"
 
-namespace Tiled::Renderer {
-void system(Scene *scene) {
-  const auto &camera = scene->registry->get<CameraComponent>(scene->camera);
-  const auto &player = scene->registry->get<TransformComponent>(scene->player);
-  auto entities =
-      scene->registry->view<const SpriteComponent, const TransformComponent>();
+namespace RendererSystem {
 
-  for (auto [entity, sprite, transform] : entities.each()) {
-    bool need_to_render =
-        in_field_of_view(scene->map, transform.position, camera, player) &&
-        in_render_range(scene->map, transform, sprite);
+void run(Scene *scene, entt::registry &registry,
+         const Ref<sf::RenderWindow> &renderer) {
+  const auto &camera = registry.get<CameraComponent>(scene->camera);
 
-    if (need_to_render) {
-      draw(scene->app->renderer, scene->textures, camera, transform, sprite,
-           scene->map->tile_size);
+  const auto &entities =
+      registry.view<const SpriteComponent, const TransformComponent,
+                    const TagComponent>();
+
+  SizeI32 map_tile_size{scene->map->tile_size};
+  SizeI32 camera_size{camera.size};
+  Rect camera_bound{
+      camera.position.x - map_tile_size.w,
+      camera.position.y - map_tile_size.h,
+      camera.position.x + camera_size.w + map_tile_size.w,
+      camera.position.y + camera_size.h + map_tile_size.h,
+  };
+
+  for (auto [entity, sprite, transform, tag] : entities.each()) {
+    // ? Converts entity position to world position
+    auto entity_position = Position{transform.position.x * map_tile_size.w,
+                                    transform.position.y * map_tile_size.h};
+
+    // ? Centers the entity on the screen based on camera
+    TransformFloat entity_transform{entity_position - camera.position,
+                                    transform.size};
+
+    if (!in_field_of_view(entity_position, camera_bound)) {
+      continue;
     }
+
+    // ? Fix position of sprites with size more than the tile size
+    if (entity_transform.size.w > map_tile_size.w) {
+      entity_transform.position.x -=
+          (entity_transform.size.w / map_tile_size.w - 1) *
+          (map_tile_size.w / 2.0f);
+    }
+
+    if (entity_transform.size.h > map_tile_size.h) {
+      entity_transform.position.y -=
+          (entity_transform.size.h / map_tile_size.h) *
+          (map_tile_size.h / 2.0f);
+    }
+
+    auto texture = scene->textures.get(sprite.texture_id);
+
+    draw(renderer, entity_transform, sprite, texture);
   }
 }
 
-bool in_field_of_view(const Ref<Map> &map, const Position &position,
-                      const CameraComponent &camera,
-                      const TransformComponent &player) {
+void draw(const Ref<sf::RenderWindow> &renderer,
+          const TransformFloat &transform, const SpriteComponent &sprite,
+          const Ref<sf::Texture> &texture) {
+  sf::VertexArray quad(sf::Quads, 4);
 
-  if (player.position.z > position.z) {
-    return false;
-  }
+  TransformFloat crop_rect{sprite.transform.position, sprite.transform.size};
 
-  return position.x >= camera.position.x - map->tile_size.w &&
-         position.y >= camera.position.y - map->tile_size.h &&
-         position.x <= camera.position.x + camera.size.w &&
-         position.y <= camera.position.y + camera.size.h;
+  quad[0].texCoords = crop_rect.position.to_sfml();
+  quad[1].texCoords = sf::Vector2f(crop_rect.position.x + crop_rect.size.w,
+                                   crop_rect.position.y);
+  quad[2].texCoords = sf::Vector2f(crop_rect.position.x + crop_rect.size.w,
+                                   crop_rect.position.y + crop_rect.size.h);
+  quad[3].texCoords = sf::Vector2f(crop_rect.position.x,
+                                   crop_rect.position.y + crop_rect.size.h);
+
+  quad[0].position = transform.position.to_sfml();
+  quad[1].position = sf::Vector2f(transform.position.x + transform.size.w,
+                                  transform.position.y);
+  quad[2].position = sf::Vector2f(transform.position.x + transform.size.w,
+                                  transform.position.y + transform.size.h);
+  quad[3].position = sf::Vector2f(transform.position.x,
+                                  transform.position.y + transform.size.h);
+
+  sf::RenderStates state;
+  state.texture = texture.get();
+
+  renderer->draw(quad, state);
 }
 
-bool in_render_range(const Ref<Map> &map, const TransformComponent &transform,
-                     const SpriteComponent &sprite) {
-  int depth = map->get_depth(sprite.depth, transform.position);
-
-  return depth < Map::MAX_TILE_VISIBLE_ENTITIES;
+bool in_field_of_view(const Position &position, const Rect &camera_bounds) {
+  return camera_bounds.left <= position.x && camera_bounds.top <= position.y &&
+         camera_bounds.right >= position.x &&
+         camera_bounds.bottom >= position.y;
 }
 
-void draw(SDL_Renderer *renderer, const TextureCache &textures,
-          const CameraComponent &camera, const TransformComponent &transform,
-          const SpriteComponent &sprite, const Size &map_tile_size) {
-  SDL_Rect target_rect{
-      transform.position.x - camera.position.x,
-      transform.position.y - camera.position.y,
-      transform.size.w,
-      transform.size.h,
-  };
-
-  if (target_rect.w > map_tile_size.w) {
-    target_rect.x -=
-        ((target_rect.w / map_tile_size.w) - 1) * (map_tile_size.w / 2);
-  }
-
-  if (target_rect.h > map_tile_size.h) {
-    target_rect.y -= (target_rect.h / map_tile_size.h) * (map_tile_size.h / 2);
-  }
-
-  if (sprite.textures.empty()) {
-    const auto &color = sprite.color;
-
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_RenderFillRect(renderer, &target_rect);
-
-    return;
-  }
-
-  auto [texture_id, crop_position, crop_size] = sprite.textures.at(0);
-
-  if (!textures.contains(texture_id)) {
-    printf("Texture not found\n");
-    return;
-  }
-
-  auto handle = textures.handle(texture_id);
-  auto &texture = handle.get();
-
-  SDL_Rect texture_rect{
-      crop_position.x,
-      crop_position.y,
-      crop_size.w,
-      crop_size.h,
-  };
-
-  SDL_RenderCopy(renderer, texture.data.get(), &texture_rect, &target_rect);
-}
-} // namespace Tiled::Renderer
+} // namespace RendererSystem

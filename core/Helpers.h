@@ -2,8 +2,6 @@
 #define EQUAL_HELPERS_H
 
 #include "Types.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include <string>
 #include <string_view>
 #include <utility>
