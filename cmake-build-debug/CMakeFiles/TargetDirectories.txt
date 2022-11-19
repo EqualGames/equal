@@ -1,0 +1,8 @@
+C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/equal/CMakeFiles/equal.dir
+C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/equal/CMakeFiles/edit_cache.dir
+C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/equal/CMakeFiles/rebuild_cache.dir
+C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/example/CMakeFiles/example.dir
+C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/example/CMakeFiles/edit_cache.dir
+C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/example/CMakeFiles/rebuild_cache.dir

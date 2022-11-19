@@ -1,0 +1,101 @@
+The system is: Windows - 10.0.19042 - AMD64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.28.29910/bin/Hostx64/x64/cl.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+Microsoft (R) C/C++ Optimizing Compiler Version 19.28.29913 for x64
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+CMakeCCompilerId.c
+Microsoft (R) Incremental Linker Version 14.28.29913.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCCompilerId.exe 
+CMakeCCompilerId.obj 
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.exe"
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.obj"
+
+The C compiler identification is MSVC, found in "C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/CMakeFiles/3.17.5/CompilerIdC/CMakeCCompilerId.exe"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.28.29910/bin/Hostx64/x64/cl.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+Microsoft (R) C/C++ Optimizing Compiler Version 19.28.29913 for x64
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+CMakeCXXCompilerId.cpp
+Microsoft (R) Incremental Linker Version 14.28.29913.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCXXCompilerId.exe 
+CMakeCXXCompilerId.obj 
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.exe"
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.obj"
+
+The CXX compiler identification is MSVC, found in "C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/CMakeFiles/3.17.5/CompilerIdCXX/CMakeCXXCompilerId.exe"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake /nologo cmTC_ca81f\fast && 	"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\bin\HostX64\x64\nmake.exe"  -f CMakeFiles\cmTC_ca81f.dir\build.make /nologo -L                  CMakeFiles\cmTC_ca81f.dir\build
+Building C object CMakeFiles/cmTC_ca81f.dir/testCCompiler.c.obj
+	C:\PROGRA~2\MICROS~2\2019\COMMUN~1\VC\Tools\MSVC\1428~1.299\bin\Hostx64\x64\cl.exe @C:\Users\mathe\AppData\Local\Temp\nm6557.tmp
+testCCompiler.c
+Linking C executable cmTC_ca81f.exe
+	"C:\Program Files\JetBrains\CLion 2020.3.2\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_ca81f.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100190~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100190~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~2\2019\COMMUN~1\VC\Tools\MSVC\1428~1.299\bin\Hostx64\x64\link.exe /nologo @CMakeFiles\cmTC_ca81f.dir\objects1.rsp @C:\Users\mathe\AppData\Local\Temp\nm6633.tmp
+	echo >nul && "C:\Program Files\PowerShell\7\pwsh.exe" -noprofile -executionpolicy Bypass -file C:/bin/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/CMakeFiles/CMakeTmp/cmTC_ca81f.exe -installedDir C:/bin/vcpkg/installed/x64-windows/debug/bin -OutVariable out
+
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake /nologo cmTC_da10f\fast && 	"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\bin\HostX64\x64\nmake.exe"  -f CMakeFiles\cmTC_da10f.dir\build.make /nologo -L                  CMakeFiles\cmTC_da10f.dir\build
+Building C object CMakeFiles/cmTC_da10f.dir/CMakeCCompilerABI.c.obj
+	C:\PROGRA~2\MICROS~2\2019\COMMUN~1\VC\Tools\MSVC\1428~1.299\bin\Hostx64\x64\cl.exe @C:\Users\mathe\AppData\Local\Temp\nm70A1.tmp
+CMakeCCompilerABI.c
+Linking C executable cmTC_da10f.exe
+	"C:\Program Files\JetBrains\CLion 2020.3.2\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_da10f.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100190~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100190~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~2\2019\COMMUN~1\VC\Tools\MSVC\1428~1.299\bin\Hostx64\x64\link.exe /nologo @CMakeFiles\cmTC_da10f.dir\objects1.rsp @C:\Users\mathe\AppData\Local\Temp\nm716E.tmp
+	echo >nul && "C:\Program Files\PowerShell\7\pwsh.exe" -noprofile -executionpolicy Bypass -file C:/bin/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/CMakeFiles/CMakeTmp/cmTC_da10f.exe -installedDir C:/bin/vcpkg/installed/x64-windows/debug/bin -OutVariable out
+
+
+
+Determining if the CXX compiler works passed with the following output:
+Change Dir: C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake /nologo cmTC_51b15\fast && 	"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\bin\HostX64\x64\nmake.exe"  -f CMakeFiles\cmTC_51b15.dir\build.make /nologo -L                  CMakeFiles\cmTC_51b15.dir\build
+Building CXX object CMakeFiles/cmTC_51b15.dir/testCXXCompiler.cxx.obj
+	C:\PROGRA~2\MICROS~2\2019\COMMUN~1\VC\Tools\MSVC\1428~1.299\bin\Hostx64\x64\cl.exe @C:\Users\mathe\AppData\Local\Temp\nm7BAE.tmp
+testCXXCompiler.cxx
+Linking CXX executable cmTC_51b15.exe
+	"C:\Program Files\JetBrains\CLion 2020.3.2\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_51b15.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100190~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100190~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~2\2019\COMMUN~1\VC\Tools\MSVC\1428~1.299\bin\Hostx64\x64\link.exe /nologo @CMakeFiles\cmTC_51b15.dir\objects1.rsp @C:\Users\mathe\AppData\Local\Temp\nm7C89.tmp
+	echo >nul && "C:\Program Files\PowerShell\7\pwsh.exe" -noprofile -executionpolicy Bypass -file C:/bin/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/CMakeFiles/CMakeTmp/cmTC_51b15.exe -installedDir C:/bin/vcpkg/installed/x64-windows/debug/bin -OutVariable out
+
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake /nologo cmTC_f1866\fast && 	"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\bin\HostX64\x64\nmake.exe"  -f CMakeFiles\cmTC_f1866.dir\build.make /nologo -L                  CMakeFiles\cmTC_f1866.dir\build
+Building CXX object CMakeFiles/cmTC_f1866.dir/CMakeCXXCompilerABI.cpp.obj
+	C:\PROGRA~2\MICROS~2\2019\COMMUN~1\VC\Tools\MSVC\1428~1.299\bin\Hostx64\x64\cl.exe @C:\Users\mathe\AppData\Local\Temp\nm867B.tmp
+CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTC_f1866.exe
+	"C:\Program Files\JetBrains\CLion 2020.3.2\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_f1866.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100190~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100190~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~2\2019\COMMUN~1\VC\Tools\MSVC\1428~1.299\bin\Hostx64\x64\link.exe /nologo @CMakeFiles\cmTC_f1866.dir\objects1.rsp @C:\Users\mathe\AppData\Local\Temp\nm8757.tmp
+	echo >nul && "C:\Program Files\PowerShell\7\pwsh.exe" -noprofile -executionpolicy Bypass -file C:/bin/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/CMakeFiles/CMakeTmp/cmTC_f1866.exe -installedDir C:/bin/vcpkg/installed/x64-windows/debug/bin -OutVariable out
+
+
+
