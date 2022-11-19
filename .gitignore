@@ -1,9 +1,12 @@
-# Editor
+# Editor/IDE
 .idea
+.vscode
+*.sln
+*.vcxproj*
 
 # build
-/cmake-build-debug/
-/cmake-build-release/
+bin
+obj
 
-# imgui
-imgui.ini
+# Development
+*.ini

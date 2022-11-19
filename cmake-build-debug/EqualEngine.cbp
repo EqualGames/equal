@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="EqualEngine"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="msvc8"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\bin\;CMake Files\..\..\..\..\..\bin\vcpkg\;CMake Files\..\..\..\..\..\bin\vcpkg\scripts\;CMake Files\..\..\..\..\..\bin\vcpkg\scripts\buildsystems\;CMake Files\..\..\..\..\..\bin\vcpkg\installed\;CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\;CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\;CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\sfml\;CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\imgui\;CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\imgui-sfml\;CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\fmt\;CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\pugixml\;CMake Files\equal\;CMake Files\example\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\Makefile VERBOSE=1 all"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\Makefile VERBOSE=1 edit_cache"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\Makefile VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="equal">
+				<Option output="C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/equal/equal-s-d.lib" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/equal"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add option="-D_CRT_SECURE_NO_WARNINGS"/>
+					<Add option="-DDEBUG"/>
+					<Add option="-DDEV_TOOLS"/>
+					<Add option="-DIMGUI_USER_CONFIG=&quot;imconfig-SFML.h&quot;"/>
+					<Add option="-DFMT_HEADER_ONLY=1"/>
+					<Add directory="C:/Users/mathe/workspace/equal-games/equal/equal/../vendor/entt/src"/>
+					<Add directory="C:/bin/vcpkg/installed/x64-windows/include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\equal\Makefile VERBOSE=1 equal"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\equal\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\equal\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\equal\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="equal/fast">
+				<Option output="C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/equal/equal-s-d.lib" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/equal"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add option="-D_CRT_SECURE_NO_WARNINGS"/>
+					<Add option="-DDEBUG"/>
+					<Add option="-DDEV_TOOLS"/>
+					<Add option="-DIMGUI_USER_CONFIG=&quot;imconfig-SFML.h&quot;"/>
+					<Add option="-DFMT_HEADER_ONLY=1"/>
+					<Add directory="C:/Users/mathe/workspace/equal-games/equal/equal/../vendor/entt/src"/>
+					<Add directory="C:/bin/vcpkg/installed/x64-windows/include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\equal\Makefile VERBOSE=1 equal/fast"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\equal\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\equal\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\equal\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="example">
+				<Option output="C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/example/example.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/example"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add option="-D_CRT_SECURE_NO_WARNINGS"/>
+					<Add option="-DDEBUG"/>
+					<Add option="-DDEV_TOOLS"/>
+					<Add option="-DIMGUI_USER_CONFIG=&quot;imconfig-SFML.h&quot;"/>
+					<Add option="-DFMT_HEADER_ONLY=1"/>
+					<Add directory="C:/Users/mathe/workspace/equal-games/equal"/>
+					<Add directory="C:/Users/mathe/workspace/equal-games/equal/equal/../vendor/entt/src"/>
+					<Add directory="C:/bin/vcpkg/installed/x64-windows/include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\example\Makefile VERBOSE=1 example"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\example\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\example\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\example\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="example/fast">
+				<Option output="C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/example/example.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/mathe/workspace/equal-games/equal/cmake-build-debug/example"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add option="-D_CRT_SECURE_NO_WARNINGS"/>
+					<Add option="-DDEBUG"/>
+					<Add option="-DDEV_TOOLS"/>
+					<Add option="-DIMGUI_USER_CONFIG=&quot;imconfig-SFML.h&quot;"/>
+					<Add option="-DFMT_HEADER_ONLY=1"/>
+					<Add directory="C:/Users/mathe/workspace/equal-games/equal"/>
+					<Add directory="C:/Users/mathe/workspace/equal-games/equal/equal/../vendor/entt/src"/>
+					<Add directory="C:/bin/vcpkg/installed/x64-windows/include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\example\Makefile VERBOSE=1 example/fast"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\example\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\example\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\mathe\workspace\equal-games\equal\cmake-build-debug\example\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/core/Application.cpp">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/core/Application.h">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/core/Helpers.cpp">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/core/Helpers.h">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/core/Map.cpp">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/core/Map.h">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/core/Scene.cpp">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/core/Scene.h">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/systems/CameraSystem.cpp">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/systems/CameraSystem.h">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/systems/InputSystem.cpp">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/systems/InputSystem.h">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/systems/MovementSystem.cpp">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/systems/MovementSystem.h">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/systems/RendererSystem.cpp">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/systems/RendererSystem.h">
+			<Option target="equal"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/example/main.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/example/scenes/DemoScene.cpp">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/example/scenes/DemoScene.h">
+			<Option target="example"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/scripts/buildsystems/vcpkg.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\scripts\buildsystems\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/sfml/SFMLConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\sfml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/sfml/SFMLConfigDependencies.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\sfml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/sfml/SFMLConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\sfml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/sfml/SFMLSharedTargets-debug.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\sfml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/sfml/SFMLSharedTargets-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\sfml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/sfml/SFMLSharedTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\sfml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/imgui/imgui-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\imgui\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/imgui/imgui-targets-debug.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\imgui\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/imgui/imgui-targets-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\imgui\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/imgui/imgui-targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\imgui\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/imgui-sfml/ImGui-SFMLConfig-debug.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\imgui-sfml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/imgui-sfml/ImGui-SFMLConfig-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\imgui-sfml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/imgui-sfml/ImGui-SFMLConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\imgui-sfml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/fmt/fmt-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\fmt\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/fmt/fmt-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\fmt\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/fmt/fmt-targets-debug.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\fmt\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/fmt/fmt-targets-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\fmt\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/fmt/fmt-targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\fmt\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/pugixml/pugixml-config-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\pugixml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/pugixml/pugixml-config.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\pugixml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/pugixml/pugixml-targets-debug.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\pugixml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/pugixml/pugixml-targets-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\pugixml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/../../../../../bin/vcpkg/installed/x64-windows/share/pugixml/pugixml-targets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\bin\vcpkg\installed\x64-windows\share\pugixml\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/equal/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\equal\"/>
+		</Unit>
+		<Unit filename="C:/Users/mathe/workspace/equal-games/equal/example/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\example\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
